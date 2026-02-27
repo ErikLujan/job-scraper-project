@@ -1,3 +1,5 @@
+import os
+import uvicorn
 from fastapi import FastAPI
 from app.api.health import router as health_router
 from app.api.scraper_routes import router as scraper_router
@@ -29,3 +31,7 @@ def create_app() -> FastAPI:
     return app
 
 app = create_app()
+
+if __name__ == "__main__":
+    puerto = int(os.environ.get("PORT", 8000))
+    uvicorn.run("main:app", host="0.0.0.0", port=puerto, reload=False)
