@@ -14,6 +14,17 @@ def obtener_ofertas(
     """
     Obtiene un listado paginado de las ofertas laborales guardadas.
     Permite filtrar opcionalmente por una tecnología específica.
+
+    **Args**:
+        tecnologia (str, opcional): El nombre de la tecnología para filtrar las ofertas.
+        pagina (int): El número de página a obtener (inicia en 1).
+        limite (int): La cantidad de ofertas a mostrar por página (máximo 100).
+
+    **Returns**:
+        dict: Un diccionario con la información de paginación y la lista de ofertas laborales.
+
+    **Raises**:
+        HTTPException: Si ocurre un error al consultar la base de datos o procesar la solicitud.
     """
 
     try:
