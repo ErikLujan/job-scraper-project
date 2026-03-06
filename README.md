@@ -1,82 +1,82 @@
 # Job Scraper API
 
-Motor analítico y API REST desarrollada para la extracción, normalización y análisis de ofertas laborales remotas en tiempo real. 
+API REST y motor de scraping para la extracción, normalización y análisis de ofertas laborales remotas. El proyecto automatiza la recopilación de datos desde portales de empleo, limpia y unifica la información tecnológica requerida por las empresas, la persiste en base de datos y la expone mediante endpoints con paginación y estadísticas en tiempo real.
 
-Este proyecto automatiza la recopilación de datos desde portales de empleo, limpia la información tecnológica requerida por las empresas y la persiste en una base de datos relacional, exponiendo endpoints para el consumo paginado y el análisis estadístico del mercado.
+## Stack
 
-## Arquitectura y Tecnologías
+- **FastAPI** — framework web
+- **PostgreSQL (Supabase)** — base de datos relacional hosteada
+- **BeautifulSoup4 / Requests** — scraping y parsing HTML
+- **uv** — gestión de dependencias y entorno virtual
 
-* **Lenguaje:** Python
-* **Framework Web:** FastAPI
-* **Base de Datos:** PostgreSQL (vía Supabase)
-* **Gestor de Paquetes:** uv
-* **Scraping:** BeautifulSoup4 / Requests
+## Características principales
 
-## Características Principales
+**Scraping bajo demanda** — el motor de extracción se dispara por endpoint, recibiendo la tecnología objetivo como parámetro.
 
-* **Scraping Dinámico:** Extracción de ofertas bajo demanda basada en parámetros de tecnología.
-* **Normalización de Datos:** Algoritmo de limpieza que unifica las variaciones de nombres de tecnologías (ej. "React.js", "ReactJS", "react" -> "React") para mantener la integridad estadística.
-* **Persistencia Inteligente (Upsert):** Inserciones en lote (batch inserts) con validación de restricciones únicas (`UNIQUE constraint`) para evitar la duplicación de ofertas preexistentes en la base de datos.
-* **Consumo Optimizado:** Endpoints de listado con paginación nativa y filtrado mediante consultas SQL dinámicas (`ilike`, `contains`).
-* **Módulo de Analíticas:** Generación de rankings en tiempo real de las tecnologías más demandadas y las empresas con mayor volumen de contratación.
+**Normalización de tecnologías** — algoritmo de limpieza que unifica variaciones de nombres (`React.js`, `ReactJS`, `react` → `React`) para mantener la integridad estadística de los datos.
 
-## Endpoints Principales
+**Upsert en lote** — las inserciones validan restricciones únicas antes de persistir, evitando duplicados en ofertas ya almacenadas.
 
-* ### POST /api/scraping/ejecutar:
-  * Dispara el motor de extracción para una tecnología específica.
- 
-  <img width="1897" height="744" alt="image" src="https://github.com/user-attachments/assets/55b6e2b3-549d-451a-9380-c0a515d71363" />
+**Filtrado y paginación** — los endpoints de listado soportan consultas dinámicas con `ilike` y `contains`, más paginación nativa.
 
+**Módulo de analíticas** — rankings en tiempo real de tecnologías más demandadas y empresas con mayor volumen de publicaciones.
 
-* ### GET /api/ofertas/:
-  * Devuelve el listado completo de ofertas guardadas (soporta parámetros pagina, limite y tecnologia).
- 
-  <img width="1889" height="877" alt="image" src="https://github.com/user-attachments/assets/b23dddee-76aa-48ae-9343-34230535af8d" />
+## Endpoints
 
-* ### GET /api/empresa/{nombre_empresa}:
-  * Busca ofertas activas filtrando por coincidencias en el nombre de la compañía.
- 
-  <img width="1891" height="643" alt="image" src="https://github.com/user-attachments/assets/99777b29-7e8e-473a-b0f0-301bec0b3a9e" />
+### POST /api/scraping/ejecutar
+Dispara el motor de extracción para una tecnología específica.
 
-* ### GET /api/estadisticas/top-tecnologias:
-  * Retorna un ranking de las habilidades más repetidas en la base de datos.
+<img width="1897" height="744" alt="image" src="https://github.com/user-attachments/assets/55b6e2b3-549d-451a-9380-c0a515d71363" />
 
-  <img width="1887" height="647" alt="image" src="https://github.com/user-attachments/assets/89dd6abc-5b6c-474e-bd21-edda1c6ba175" />
+### GET /api/ofertas/
+Devuelve el listado completo de ofertas guardadas. Soporta los parámetros `pagina`, `limite` y `tecnologia`.
 
- 
-* ### GET /api/estadisticas/top-empresas:
-  * Retorna las compañías con mayor cantidad de publicaciones.
- 
-  <img width="1893" height="600" alt="image" src="https://github.com/user-attachments/assets/2f060ed9-6783-424f-b2b2-39d4727acdd8" />
+<img width="1889" height="877" alt="image" src="https://github.com/user-attachments/assets/b23dddee-76aa-48ae-9343-34230535af8d" />
 
-## Instalación y Uso Local
+### GET /api/empresa/{nombre_empresa}
+Busca ofertas filtrando por coincidencias en el nombre de la empresa.
 
-1. Clonar el repositorio:
-    ```bash
-    git clone [https://github.com/TU_USUARIO/job-scraper-project.git](https://github.com/TU_USUARIO/job-scraper-project.git)
-    cd job-scraper-project
-    ```
+<img width="1891" height="643" alt="image" src="https://github.com/user-attachments/assets/99777b29-7e8e-473a-b0f0-301bec0b3a9e" />
 
-2. Crear y activar el entorno virtual usando uv:
-    ```
-    uv venv
-    # En Windows:
-    .venv\Scripts\activate
-    ```
+### GET /api/estadisticas/top-tecnologias
+Ranking de las tecnologías más repetidas en la base de datos.
 
-3. Instalar las dependencias:
-    ```
-    uv pip install -r requirements.txt
-    ```
+<img width="1887" height="647" alt="image" src="https://github.com/user-attachments/assets/89dd6abc-5b6c-474e-bd21-edda1c6ba175" />
 
-4. Configurar las variables de entorno. Crear un archivo .env en la raíz con tus credenciales de Supabase:
-    ```
-    SUPABASE_URL="url_supabase"
-    SUPABASE_KEY="anon_key"
-    ```
-   
-5. Ejecutar el servidor de desarrollo:
-    ```
-    uvicorn main:app --reload
-    ```
-6. Acceder a la documentación interactiva en: http://localhost:8000/docs
+### GET /api/estadisticas/top-empresas
+Empresas con mayor cantidad de publicaciones activas.
+
+<img width="1893" height="600" alt="image" src="https://github.com/user-attachments/assets/2f060ed9-6783-424f-b2b2-39d4727acdd8" />
+
+## Instalación
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/TU_USUARIO/job-scraper-project.git
+cd job-scraper-project
+
+# Crear y activar el entorno virtual
+uv venv
+.venv\Scripts\activate  # Windows
+source .venv/bin/activate  # Linux/Mac
+
+# Instalar dependencias
+uv pip install -r requirements.txt
+```
+
+### Variables de entorno
+
+Creá un archivo `.env` en la raíz del proyecto con tus credenciales de Supabase:
+
+```env
+SUPABASE_URL=url_supabase
+SUPABASE_KEY=anon_key
+```
+
+### Levantar el servidor
+
+```bash
+uvicorn main:app --reload
+```
+
+La documentación interactiva queda disponible en `http://localhost:8000/docs`.
