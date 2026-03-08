@@ -1,11 +1,14 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from collections import Counter
+
+from app.core.rate_limiter import limiter
 from app.core.database import db_cliente
 
 router = APIRouter()
 
 @router.get("/estadisticas/top-tecnologias")
-def obtener_top_tecnologias(limite: int = 10) -> dict:
+@limiter.limit("25/minute")
+def obtener_top_tecnologias(request: Request, limite: int = 10) -> dict:
     """
     Calcula las tecnologías más demandadas basándose en las ofertas guardadas.
 
@@ -47,7 +50,8 @@ def obtener_top_tecnologias(limite: int = 10) -> dict:
         raise HTTPException(status_code=500, detail=f"Error al obtener estadísticas: {str(e)}")
     
 @router.get("/estadisticas/top-empresas")
-def obtener_top_empresas(limite: int = 10) -> dict:
+@limiter.limit("25/minute")
+def obtener_top_empresas(request: Request, limite: int = 10) -> dict:
     """
     Calcula cuáles son las empresas con más ofertas publicadas en la base de datos.
 

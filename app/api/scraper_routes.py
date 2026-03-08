@@ -1,5 +1,8 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Depends
 from typing import List
+
+from app.core.rate_limiter import limiter
+from app.core.security import verificar_token
 from app.scraper.extractor import obtener_html_renderizado
 from app.scraper.remoteok import parsear_remoteok
 from app.models.job import OfertaLaboral
@@ -9,7 +12,12 @@ from app.services.repository import guardar_ofertas_en_db
 router = APIRouter()
 
 @router.post("/scraping/ejecutar")
-def ejecutar_scraper_dinamico(tecnologia: str = Query(..., description="Tecnología a scrapear")) -> dict:
+@limiter.limit("10/minute")
+def ejecutar_scraper_dinamico(
+    request: Request, 
+    tecnologia: str = Query(..., description="Tecnología a scrapear"),
+    usuario_autenticado: str = Depends(verificar_token)
+    ) -> dict:
     """
     Scrapea ofertas de RemoteOK para una tecnología específica de forma dinámica.
 
