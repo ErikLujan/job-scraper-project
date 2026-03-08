@@ -1,12 +1,16 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request
 from typing import Optional
+
 from app.core.database import db_cliente
+from app.core.rate_limiter import limiter
 from app.services.normalizer import normalizar_tecnologia
 
 router = APIRouter()
 
 @router.get("/ofertas")
+@limiter.limit("25/minute")
 def obtener_ofertas(
+    request: Request,
     tecnologia: Optional[str] = Query(None, description="Filtrar ofertas por tecnología"),
     pagina: int = Query(1, ge=1, description="Número de página actual"),
     limite: int = Query(20, ge=1, le=100, description="Cantidad de ofertas por pagina (máximo 100)")
@@ -63,7 +67,8 @@ def obtener_ofertas(
         raise HTTPException(status_code=500, detail=f"Error al obtener ofertas: {str(e)}")
 
 @router.get("/empresa/{nombre_empresa}")
-def obtener_ofertas_por_empresa(nombre_empresa: str) -> dict:
+@limiter.limit("25/minute")
+def obtener_ofertas_por_empresa(request: Request, nombre_empresa: str) -> dict:
     """
     Obtiene todas las ofertas laborales asociadas a una empresa específica.
 

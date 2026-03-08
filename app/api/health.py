@@ -1,9 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
+from app.core.rate_limiter import limiter
 
 router = APIRouter()
 
 @router.get("/health")
-def health_check() -> dict:
+@limiter.limit("10/minute")
+def health_check(request: Request) -> dict:
     """
     Verifica el estado de la API.
 
