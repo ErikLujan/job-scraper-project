@@ -63,7 +63,7 @@ def parsear_remoteok(html: str) -> List[OfertaLaboral]:
                     empresa=empresa,
                     enlace=enlace,
                     tecnologias_raw=tecnologias,
-                    tencologias_normalizadas=[],
+                    tecnologias_normalizadas=[],
                     salario=salario_extraido
                 )
                 ofertas.append(oferta)
